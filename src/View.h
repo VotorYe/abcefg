@@ -4,6 +4,8 @@
 #include <map>
 #include <vector>
 #include <set>
+#include "regex.cpp"
+#include "DocuSet.h"
 
 using namespace std;
 
@@ -41,6 +43,8 @@ private:
     string reg;
     map<int, string> groupNames;
 
+    string fileName;
+
 public:
     // stores all the views with the viewId(viewName) as the key
     static map<string, View> viewManager;
@@ -60,6 +64,10 @@ public:
 
     View() {
 
+    }
+
+    View(string fileName) {
+        this->fileName = fileName;
     }
 
     // return all the columns
@@ -162,6 +170,84 @@ public:
     // get the reg
     string get_reg() {
         return reg;
+    }
+
+    // construct this view from a regex(we get the text pointer in the function)
+    // how do we get the text? we get it from a fileName
+    // notice that the file name is set in the constructor @View(string fileName)
+    // and of course, you can set the file name by @setFileName(string newFileName)
+    void create_view_from_regex(string regex) {
+        if ("" == fileName) {
+            // the file name is unset
+        }
+        else {
+            char * text = DocuSet::get_content(fileName);
+            vector<vector<int>> location = findall(regex.c_str(), text);
+            columns.clear();
+            vector<Data> column;
+            int size = location.size();
+            for (int i = 0; i < size; i++) {
+                string content = string(text + s, text + e);
+                int s = location[i][0];
+                int e = location[i][1];
+                for (int j = DocuSet::tokens.size() - 1; j >= 0; j--) {
+                    if (DocuSet::tokens[j].content == content
+                        && DocuSet::tokens[j].start == s
+                        && DocuSet::tokens[j].end == e) {
+                        column.push_back(Data(content, s, e));
+                        break;
+                    }
+                }
+            }
+            columns[groupNames[0]] = column;
+        }
+    }
+
+    void setFileName(string newFileName) {
+        this->fileName = newFileName;
+    }
+
+    void pattern_regex_action() {
+        if ("" == fileName) {
+            // the file name is unset
+        }
+        else {
+            char * text = DocuSet::get_content(fileName);
+            vector<vector<int>> location = findall(reg.c_str(), text);
+            columns.clear();
+            vector<Data> column;
+            int size = location.size();
+            for (int i = 0; i < size; i++) {
+                string content = string(text + s, text + e);
+                int s = location[i][0];
+                int e = location[i][1];
+                for (int j = DocuSet::tokens.size() - 1; j >= 0; j--) {
+                    if (DocuSet::tokens[j].content == content
+                        && DocuSet::tokens[j].start == s
+                        && DocuSet::tokens[j].end == e) {
+                        column.push_back(Data(content, s, e));
+                        break;
+                    }
+                }
+            }
+            columns[groupNames[0]] = column;
+        }
+    }
+
+    void pattern_action() {
+
+    }
+
+    void set_PatternGroup_st() {
+
+    }
+    
+    void set_PatternGroup_ed() {
+
+    }
+
+    void addPatternItem() {
+
     }
 
 };
