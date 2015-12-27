@@ -10,7 +10,10 @@ using namespace std;
 struct group {
     int start;
     int end;
-    group(){start = 0; end = 0;}
+    group(int s, int e) {
+        start = s;
+        end = e;
+    }
 };
 struct Data {
     string str;
@@ -47,6 +50,8 @@ private:
     map<int, string> groupNames;
     vector<patternItem> patterns;
     map<string, string> nick_to_real;
+    vector<group> groups;
+    int pattern_st = -1;
 public:
     // stores all the views with the viewId(viewName) as the key
     static map<string, View> viewManager;
@@ -65,13 +70,21 @@ public:
     }
 
     View() {
+        pattern_st = -1;
     }
 
     // return all the columns
     map<string, vector<Data> > getAllColumns(//////////////////////////) {
         return columns;
     }
+    void set_PatternGroup_st() {
+        pattern_st = patterns.size();
+    }
 
+    void set_PatternGroup_ed() {
+        group temp(pattern_st, patterns.size() - 1);
+        groups.push_back(temp);
+    }
     // set all the columns
     void setAllColumns(map<string, vector<Data> > columns) {
         this->columns = columns;
@@ -215,13 +228,16 @@ public:
     /*
             match the patterns with the items of text;
     */
-    View match_patterns() {
+    void pattern_action() {
         View newView;
         if (!parserCompleted()) {
             return newView;
         }
 
-
+        for (int i = 0; i < groups.size(); i++) {
+            columns.insert(pair<string, vector<Data>>(groupNames[i + 1], match_range(groups[i].start, groups[i].end));
+        }
+        columns.insert(pair<string, vector<Data>>(groupNames[0], match_range(0, patterns.size() - 1));
     }
     /*
         input:the range of the patterns
