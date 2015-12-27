@@ -14,8 +14,8 @@ private:
     map<string, View> viewList;
     View currentView;
 public:
-    Parser(Lexer* l) {this->lex = l; move();}
-    void move() {this->look = lex->scan();}
+    Parser(Lexer* l) { this->lex = l; move(); }
+    void move() { this->look = lex->scan(); }
     void match(int t) {
         if (look.tag == t) move();
         else {} //error handle
@@ -33,7 +33,8 @@ public:
         if (look.tag == Tag.CREATE) {
             create_stmt();
             match(Tag.SEMICOLON);
-        } else if(look.tag == Tag.OUTPUT) {
+        }
+        else if (look.tag == Tag.OUTPUT) {
             output_stmt();
             match(Tag.SEMICOLON);
         }
@@ -49,7 +50,8 @@ public:
     void view_stmt() {
         if (look.tag == Tag.SELECT) {
             select_stmt();
-        } else if (look.tag == Tag.EXTRACT) {
+        }
+        else if (look.tag == Tag.EXTRACT) {
             extract_stmt();
         }
     }
@@ -79,7 +81,8 @@ public:
             match(Tag.AS);
             currentView.add_select_item(viewName, header, look.get_lexeme()); // newHeader
             match(Tag.ID);
-        } else {
+        }
+        else {
             currentView.add_select_item(viewName, header, header);
         }
     }
@@ -100,9 +103,13 @@ public:
     void extract_spec() {
         if (look.tag == Tag.REGEX) {
             regex_spec();
-        } else if (look.tag == Tag.PATTERN) {
+            currentView.pattern_regex_action();
+        }
+        else if (look.tag == Tag.PATTERN) {
             pattern_spec();
-        } else {
+            currentView.pattern_action();
+        }
+        else {
             // error handle
         }
     }
@@ -123,10 +130,12 @@ public:
             match(Tag.AS);
             string headerName = look.get_lexeme(); match(Tag.ID);
             currentView.add_group(0, headerName);
-        } else if (look.tag == Tag.RETURN) {
+        }
+        else if (look.tag == Tag.RETURN) {
             match(Tag.RETURN);
             group_spec();
-        } else {
+        }
+        else {
             // error
         }
     }
@@ -163,7 +172,8 @@ public:
     void pattern_pkg() {
         if (look.tag == Tag.LEFTPARENTHESIS) {
             pattern_group();
-        } else {
+        }
+        else {
             atom();
         }
     }
@@ -185,7 +195,8 @@ public:
 
                 currentView.addPatternItem(pattern_type.COLUMN, viewNickName, look.get_lexeme());
                 match(Tag.ID); match(Tag.GREATER);
-            } else if (look.tag == Tag.TOKEN) {
+            }
+            else if (look.tag == Tag.TOKEN) {
                 match(Tag.TOKEN); match(Tag.GREATER); match(Tag.LEFTBRACE);
                 int min = look.get_value();
                 match(Tag.NUM); match(Tag.COMMA);
@@ -193,8 +204,9 @@ public:
                 currentView.addPatternItem(pattern_type.TOKEN, min, look.get_value());
                 match(Tag.NUM); match(Tag.RIGHTBRACE);
             }
-        } else if (look.tag == Tag.REG) {
-                currentView.addPatternItem(pattern_type.REGEX, look.get_lexeme()); match(Tag.REG);
+        }
+        else if (look.tag == Tag.REG) {
+            currentView.addPatternItem(pattern_type.REGEX, look.get_lexeme()); match(Tag.REG);
         }
     }
 
@@ -205,7 +217,8 @@ public:
         if (look.tag == Tag.AS) {
             match(Tag.AS);
             View::print_view(viewId, look.get_lexeme());
-        } else {
+        }
+        else {
             nickName = viewId;
 
         }

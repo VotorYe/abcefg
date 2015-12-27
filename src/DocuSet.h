@@ -23,21 +23,21 @@ public:
         filebuf *pbuf;
         ifstream filestr;
         long size;
-        filestr.open (file.c_str(), ios::binary);
+        filestr.open(file.c_str(), ios::binary);
         // 获取filestr对应buffer对象的指针 
-        pbuf=filestr.rdbuf();
-        
+        pbuf = filestr.rdbuf();
+
         // 获取文件大小
-        size=pbuf->pubseekoff (0,ios::end,ios::in);
-        pbuf->pubseekpos (0,ios::in);
-        
+        size = pbuf->pubseekoff(0, ios::end, ios::in);
+        pbuf->pubseekpos(0, ios::in);
+
         char* buffer;
-        buffer=new char[size];
+        buffer = new char[size];
         // 获取文件内容
-        pbuf->sgetn (buffer,size);
+        pbuf->sgetn(buffer, size);
 
         length = size;
-        
+
         filestr.close();
         return buffer;
     }
@@ -45,7 +45,7 @@ public:
     // load the content, tokenize the content save as a vector
     static void load_doc(string path) {
         if (DocuSet::content != NULL) {
-            delete []content;
+            delete[]content;
         }
         DocuSet::content = DocuSet::read_from(path, DocuSet::length);
         DocuSet::tokens = tokenizer(content);
@@ -54,7 +54,7 @@ public:
     // return content (point)
     static char* get_content(string filename) {
         return DocuSet::content;
-    } 
+    }
 
     // return tokens 
     static vector<token> get_tokens() {
