@@ -100,8 +100,10 @@ public:
     void extract_spec() {
         if (look.tag == Tag.REGEX) {
             regex_spec();
+            currentView.pattern_regex_action();
         } else if (look.tag == Tag.PATTERN) {
             pattern_spec();
+            currentView.pattern_action();
         } else {
             // error handle
         }

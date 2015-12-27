@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <fstream>
 #include <dirent.h>
+#include <vector>
+#include "tokenizer.h"
 
 using namespace std;
 
@@ -9,6 +11,7 @@ class DocuSet {
 public:
     static char* content;
     static int length;
+    static vector<token> tokens;
 
     // return true for file, false for dir
     bool input_file(string path) {
@@ -39,16 +42,22 @@ public:
         return buffer;
     }
 
-    // load the content
+    // load the content, tokenize the content save as a vector
     static void load_doc(string path) {
         if (DocuSet::content != NULL) {
             delete []content;
         }
         DocuSet::content = DocuSet::read_from(path, DocuSet::length);
+        DocuSet::tokens = tokenizer(content);
     }
 
     // return content (point)
     static char* get_content(string filename) {
-        return content;
+        return DocuSet::content;
     } 
+
+    // return tokens 
+    static vector<token> get_tokens() {
+        return DocuSet::tokens;
+    }
 };
