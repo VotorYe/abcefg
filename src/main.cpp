@@ -2,16 +2,21 @@
 #include <iostream>
 #include <fstream>
 
-#include "Lexer.h"
-#include "Token.h"
+#include "Lexer.cpp"
+#include "Parser.cpp"
+#include "DocuSet.cpp"
 
 using namespace std;
 
-char* read_from(string file, int& length) {
+bool input_file(string path) {
+    return path.find(".input") != path.npos;
+}
+
+char* read_from_(string file, int& length) {
     filebuf *pbuf;
     ifstream filestr;
     long size;
-    filestr.open (file, ios::binary);
+    filestr.open (file.c_str(), ios::binary);
     // 获取filestr对应buffer对象的指针 
     pbuf=filestr.rdbuf();
     
@@ -30,25 +35,57 @@ char* read_from(string file, int& length) {
     return buffer;
 }
 
-int test() {
-    FILE *fp;
-    int length;
-    char* input = read_from("PerLoc.aql", length);
+int main() {
+    string aql_file;
+    string doc_path;
 
-    Lexer lex = Lexer(input, length);
-    while (!lex.end_of_input()) {
-        Token tok = lex.scan();
-        int tag = tok.get_tag();
-        if (tag >= 151 && tag <= 164) {cout << "keyword" << " "  << tok.get_lexeme() << endl;}
-        else if (tag >= 301 && tag <= 306) {cout << "brace" << " "  << tok.get_lexeme() << endl;}
-        else if (tag == 201) {cout << "num" << " "  << tok.get_value() << endl;}
-        else if (tag == 202) {cout << "ID" << " "  << tok.get_lexeme() << endl;}
-        else if (tag >= 401 && tag <= 403) {cout << "comma" << " "  << tok.get_lexeme() << endl;}
-        else if (tag == 501) {cout << "reg" << " "  << tok.get_lexeme() << endl;}
-        else if (tag == 10) {cout << "end_of_input\n";}
-        else {cout << "unexpected " << tag << endl;}
+    //printf("input aql file name\n");
+    cin >> aql_file;
+    //aql_file = "Revenue.aql";
+    //printf("doc file/dir path\n");
+    cin >> doc_path;
+    //doc_path = "Revenue.input";
+
+    int length;
+    char* code = read_from_(aql_file, length);
+
+    DocuSet doc;
+
+
+    /*
+        process single file or files in a dir
+    */
+    if (input_file(doc_path)) {                         // single file
+        doc.load_doc(doc_path);
+        Lexer lexer = Lexer(code, length);
+        Parser parser = Parser(&lexer);
+        cout << "Processing " << doc_path << endl;
+        parser.program();
+    } else {                                                       // a dir
+        Lexer lexer = Lexer(code, length);
+        struct dirent *ptr;    
+        DIR *dir;
+        dir=opendir(doc_path.c_str());
+        while((ptr=readdir(dir))!=NULL)         // tranvesal the dir
+        {
+            //跳过'.'和'..'两个目录
+            if(ptr->d_name[0] == '.')
+                continue;
+            if (input_file(ptr->d_name)&&input_file(ptr->d_name)) {          // single file
+                if (doc_path[doc_path.size()-1] != '/') {
+                    doc.load_doc(doc_path+"/"+ptr->d_name);
+                } else {
+                    doc.load_doc(doc_path+ptr->d_name);
+                }
+                lexer.back_end();
+                Parser parser = Parser(&lexer);
+                cout << "Processing " << ptr->d_name << endl;
+                parser.program();
+                cout << endl;
+            }
+        }
+        closedir(dir);
     }
 
-    delete []input;
     return 0;
 }

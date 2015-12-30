@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __TAG_H__
+#define __TAG_H__
 struct TAG {
         const int
         CREATE = 151, VIEW = 152, AS = 153, OUTPUT = 154,
@@ -17,3 +18,4 @@ struct TAG {
         REG = 501,
         END = 10;
 } Tag;
+#endif

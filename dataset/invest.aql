@@ -1,0 +1,50 @@
+create view Company as
+	extract regex /Huawei|Samsung|Apple/ 
+		on D.text as company
+	from Document D;
+
+create view Invest as
+        extract regex /will invest|is investing|invested|invests|invest/
+             on D.text as invest
+        from Document D;
+
+create view Number as
+	extract regex /[1-9][0-9]+(\.[0-9]+)?/
+		on D.text as number
+	from Document D;
+
+create view Unit as
+	extract regex /percent|billion|million/
+		on D.text as unit
+	from Document D;
+
+create view Amount as 
+	extract pattern  (<N.number>) (<U.unit>)
+		return group 0 as amount
+		   and group 1 as number
+		   and group 2 as unit
+	from Number N, Unit U;
+
+create view Program as 
+	extract regex /research and development|Wuchuan|Sunit|Saihan/  	
+		on D.text as program 
+	from Document D;  
+
+
+create view CompanyForProgram as
+    extract pattern (<C.company>) (<I.invest>) <Token>{0,2} (<A.amount>) <Token>{4,5} (<P.program>)
+    	return group 0 as CompanyForProgram 
+             and group 1 as Company
+             and group 2 as Invest 
+       	 and group 3 as Amount
+             and group 4 as Program
+    from Company C, Invest I, Amount A, Program P;
+
+
+output view Company;
+output view Invest;
+output view Number;
+output view Unit;
+output view Amount;
+output view Program;
+output view CompanyForProgram;

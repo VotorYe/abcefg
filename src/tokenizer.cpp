@@ -1,3 +1,5 @@
+#ifndef __TOKENIZER_H__
+#define __TOKENIZER_H__
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -14,7 +16,7 @@ struct token {
 	}
 };
 bool is_digit_or_letter(char a);
-vector<token> tokenizer(char* input) {
+vector<token> tokenizer(const char* input) {
 	int start = 0;
 	int end = 0;
 	vector<token> tokens;
@@ -63,3 +65,4 @@ bool is_digit_or_letter(char a) {
 
 	return false;
 }
+#endif

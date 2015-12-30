@@ -1,11 +1,14 @@
+#ifndef __DOCUSET_H__
+#define __DOCUSET_H__
 #include <map>
 #include <stdio.h>
 #include <fstream>
 #include <dirent.h>
 #include <vector>
-#include "tokenizer.h"
+#include "tokenizer.cpp"
 
 using namespace std;
+class DocuSet;
 
 class DocuSet {
 public:
@@ -19,7 +22,7 @@ public:
     }
 
     // read a file in to a char array
-    static char* read_from(string file, int& length) {
+    char* read_from(string file, int& length) {
         filebuf *pbuf;
         ifstream filestr;
         long size;
@@ -43,21 +46,26 @@ public:
     }
 
     // load the content, tokenize the content save as a vector
-    static void load_doc(string path) {
-        if (DocuSet::content != NULL) {
+    void load_doc(string path) {
+        if (content != NULL) {
             delete []content;
         }
-        DocuSet::content = DocuSet::read_from(path, DocuSet::length);
-        DocuSet::tokens = tokenizer(content);
+        content = DocuSet::read_from(path, length);
+        tokens.clear();
+        tokens = tokenizer(path.c_str());
     }
 
     // return content (point)
-    static char* get_content(string filename) {
-        return DocuSet::content;
+    char* get_content(string filename) {
+        return content;
     } 
 
     // return tokens 
-    static vector<token> get_tokens() {
-        return DocuSet::tokens;
+    vector<token> get_tokens() {
+        return tokens;
     }
 };
+char* DocuSet::content = NULL;
+int DocuSet::length;
+vector<token> DocuSet::tokens;
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __TOKEN_H__
+#define __TOKEN_H__
 #include <string>
 #include "Tag.h"
 
@@ -27,4 +28,4 @@ public:
         lexeme = str;
     }
 };
-
+#endif
