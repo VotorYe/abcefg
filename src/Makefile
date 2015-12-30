@@ -1,5 +1,7 @@
-run : main.o Parser.o View.o DocuSet.o Lexer.o Token.o patternItem.o regex.o tokenizer.o
-	g++ -o run main.o
+run : main
+	./main
+main : main.o Parser.o View.o DocuSet.o Lexer.o Token.o patternItem.o regex.o tokenizer.o
+	g++ -o main main.o
 main.o : main.cpp Lexer.o Parser.o DocuSet.o 
 	g++ -c -std=c++11 main.cpp
 Parser.o : Parser.cpp Lexer.o Token.o Tag.h View.o
